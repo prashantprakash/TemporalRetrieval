@@ -2,6 +2,7 @@
     <wb-module deploy-name="ebola">
         <wb-resource deploy-path="/" source-path="/WebContent" tag="defaultRootSource"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/corpus"/>
         <property name="context-root" value="ebola"/>
         <property name="java-output-path" value="/ebola/build/classes"/>
     </wb-module>

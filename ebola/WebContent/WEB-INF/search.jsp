@@ -19,7 +19,10 @@
         
         <!--  <link rel="stylesheet" href="css/style.css" /> -->
         <link rel="stylesheet" href="css/bootstrap.min.css">
+          <link rel="stylesheet" href="http://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+        
 <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+<script src="http://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
 <style type="text/css">
 
 	html {
@@ -52,15 +55,57 @@ body {
 }
 </style>
 <script>
+var inputtextval="";
+var i=0;
 $(document).ready(function(){
 	$("#searchresultdiv").hide();
 	$("#searchsubmit").click(function(){
 		//console.log("search clicked");
+		inputtextval =$("#inptext").val();
 		$("#searchresultdiv").show();
 		$('#searchdiv').hide();
+		$("#inptext1").val(inputtextval);
 		
 	});
+	
+	
+	$("#inptext").keypress(function() {
+		 // console.log( "Handler for .keypress() called." );
+		 inputtextval =$("#inptext").val();
+		 console.log(inputtextval);
+		 console.log(i);
+		 
+		 if(i>=1){
+			$("#searchresultdiv").show();
+			$('#searchdiv').hide();
+			$("#inptext1").val(inputtextval);
+			$("#inptext1").focus();
+			$("#inptext1").keypress();	
+		 }
+		 i=i+1;
+		
+	});
+	
+	
+	var availableTags ;
+	$.getJSON( "query?choice=getquery", function( data ) {
+	  console.log(data);
+  	  availableTags = data;
+	});
+	
+    
+    $("#inptext1").autocomplete({ 
+        source: function(request, response) {
+            var results = $.ui.autocomplete.filter(availableTags, request.term);
+            
+            response(results.slice(0, 10));
+        }
+    });
+
+
+	
 });
+
 </script>
 </head>
 <body>
