@@ -1,5 +1,9 @@
 package com.src.ebola;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -10,6 +14,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils.Text;
 
 public class Util {
 	/**
@@ -122,4 +128,29 @@ public class Util {
 		return sortedMap;
 	}
 
+	/**
+	 * This method returns the content of the text tag in the document.
+	 * 
+	 * @param docId
+	 * @return
+	 */
+	public static String getDocContent(String docName) {
+
+		String fileName = "E:\\IR\\indexer\\indexer\\corpus\\data\\";
+		fileName += docName;
+		StringBuffer text = new StringBuffer();
+		try {
+			BufferedReader reader = new BufferedReader(new FileReader(fileName));
+			String line;
+			while ((line = reader.readLine()) != null) {
+				text.append("\t" + line);
+
+			}
+			reader.close();
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return text.toString();
+	}
 }

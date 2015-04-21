@@ -60,62 +60,74 @@ public class FileUtils {
 
 	@SuppressWarnings("unchecked")
 	public static void readMaps() throws Exception {
-		FileInputStream fis = new FileInputStream("documentNameIdMap.ser");
+		FileInputStream fis = new FileInputStream(
+				"E:\\UTDHackethon\\UTD_Hack\\UTDHackWorkSpace\\ebola\\documentNameIdMap.ser");
 		ObjectInputStream ois = new ObjectInputStream(fis);
 		documentNameIdMap = (HashMap<String, Integer>) ois.readObject();
 		ois.close();
 
-		FileInputStream fis1 = new FileInputStream("docTokensMap.ser");
+		FileInputStream fis1 = new FileInputStream(
+				"E:\\UTDHackethon\\UTD_Hack\\UTDHackWorkSpace\\ebola\\docTokensMap.ser");
 		ObjectInputStream ois1 = new ObjectInputStream(fis1);
 		docTokensMap = (HashMap<Integer, HashMap<String, Integer>>) ois1.readObject();
 		ois1.close();
 
-		FileInputStream fis2 = new FileInputStream("documentIdMap.ser");
+		FileInputStream fis2 = new FileInputStream(
+				"E:\\UTDHackethon\\UTD_Hack\\UTDHackWorkSpace\\ebola\\documentIdMap.ser");
 		ObjectInputStream ois2 = new ObjectInputStream(fis2);
 		documentIdMap = (HashMap<Integer, DocumentNode>) ois2.readObject();
 		ois2.close();
 
-		FileInputStream fis3 = new FileInputStream("stemmerIndex.ser");
+		FileInputStream fis3 = new FileInputStream(
+				"E:\\UTDHackethon\\UTD_Hack\\UTDHackWorkSpace\\ebola\\stemmerIndex.ser");
 		ObjectInputStream ois3 = new ObjectInputStream(fis3);
 		stemmerIndex = (HashMap<TermNode, TreeMap<Integer, Integer>>) ois3.readObject();
 		ois3.close();
 
-		FileInputStream fis4 = new FileInputStream("RF1StemmerIndex.ser");
+		FileInputStream fis4 = new FileInputStream(
+				"E:\\UTDHackethon\\UTD_Hack\\UTDHackWorkSpace\\ebola\\RF1StemmerIndex.ser");
 		ObjectInputStream ois4 = new ObjectInputStream(fis4);
 		RF1StemmerIndex = (HashMap<String, TreeMap<Integer, Integer>>) ois4.readObject();
 		ois4.close();
 
-		FileInputStream fis5 = new FileInputStream("RF2StemmerIndex.ser");
+		FileInputStream fis5 = new FileInputStream(
+				"E:\\UTDHackethon\\UTD_Hack\\UTDHackWorkSpace\\ebola\\RF2StemmerIndex.ser");
 		ObjectInputStream ois5 = new ObjectInputStream(fis5);
 		RF2StemmerIndex = (HashMap<String, TreeMap<Integer, Integer>>) ois5.readObject();
 		ois5.close();
 
-		FileInputStream fis6 = new FileInputStream("RF3StemmerIndex.ser");
+		FileInputStream fis6 = new FileInputStream(
+				"E:\\UTDHackethon\\UTD_Hack\\UTDHackWorkSpace\\ebola\\RF3StemmerIndex.ser");
 		ObjectInputStream ois6 = new ObjectInputStream(fis6);
 		RF3StemmerIndex = (HashMap<String, TreeMap<Integer, Integer>>) ois6.readObject();
 		ois6.close();
 
-		FileInputStream fis7 = new FileInputStream("RF4StemmerIndex.ser");
+		FileInputStream fis7 = new FileInputStream(
+				"E:\\UTDHackethon\\UTD_Hack\\UTDHackWorkSpace\\ebola\\RF4StemmerIndex.ser");
 		ObjectInputStream ois7 = new ObjectInputStream(fis7);
 		RF4StemmerIndex = (HashMap<String, TreeMap<Integer, Integer>>) ois7.readObject();
 		ois7.close();
 
-		FileInputStream fis8 = new FileInputStream("RF5StemmerIndex.ser");
+		FileInputStream fis8 = new FileInputStream(
+				"E:\\UTDHackethon\\UTD_Hack\\UTDHackWorkSpace\\ebola\\RF5StemmerIndex.ser");
 		ObjectInputStream ois8 = new ObjectInputStream(fis8);
 		RF5StemmerIndex = (HashMap<String, TreeMap<Integer, Integer>>) ois8.readObject();
 		ois8.close();
 
-		FileInputStream fis9 = new FileInputStream("RF6StemmerIndex.ser");
+		FileInputStream fis9 = new FileInputStream(
+				"E:\\UTDHackethon\\UTD_Hack\\UTDHackWorkSpace\\ebola\\RF6StemmerIndex.ser");
 		ObjectInputStream ois9 = new ObjectInputStream(fis9);
 		RF6StemmerIndex = (HashMap<String, TreeMap<Integer, Integer>>) ois9.readObject();
 		ois9.close();
 
-		FileInputStream fis10 = new FileInputStream("RF7StemmerIndex.ser");
+		FileInputStream fis10 = new FileInputStream(
+				"E:\\UTDHackethon\\UTD_Hack\\UTDHackWorkSpace\\ebola\\RF7StemmerIndex.ser");
 		ObjectInputStream ois10 = new ObjectInputStream(fis10);
 		RF7StemmerIndex = (HashMap<String, TreeMap<Integer, Integer>>) ois10.readObject();
 		ois10.close();
 
-		FileInputStream fis11 = new FileInputStream("RF8StemmerIndex.ser");
+		FileInputStream fis11 = new FileInputStream(
+				"E:\\UTDHackethon\\UTD_Hack\\UTDHackWorkSpace\\ebola\\RF8StemmerIndex.ser");
 		ObjectInputStream ois11 = new ObjectInputStream(fis11);
 		RF8StemmerIndex = (HashMap<String, TreeMap<Integer, Integer>>) ois11.readObject();
 		ois11.close();
@@ -208,25 +220,35 @@ public class FileUtils {
 
 	// doubt can a term belongs to two different posting list
 	public int getDocumentFrequency(String term) {
+		TreeMap<Integer, Integer> mergedSet = new TreeMap<Integer, Integer>();
 		if (RF1StemmerIndex.containsKey(term)) {
-			return RF1StemmerIndex.get(term).size();
+			// return RF1StemmerIndex.get(term).size();
+			mergedSet.putAll(RF1StemmerIndex.get(term));
 		} else if (RF2StemmerIndex.containsKey(term)) {
-			return RF2StemmerIndex.get(term).size();
+			// return RF2StemmerIndex.get(term).size();
+			mergedSet.putAll(RF2StemmerIndex.get(term));
 		} else if (RF3StemmerIndex.containsKey(term)) {
-			return RF3StemmerIndex.get(term).size();
+			// return RF3StemmerIndex.get(term).size();
+			mergedSet.putAll(RF3StemmerIndex.get(term));
 		} else if (RF4StemmerIndex.containsKey(term)) {
-			return RF4StemmerIndex.get(term).size();
+			// return RF4StemmerIndex.get(term).size();
+			mergedSet.putAll(RF4StemmerIndex.get(term));
 		} else if (RF5StemmerIndex.containsKey(term)) {
-			return RF5StemmerIndex.get(term).size();
+			// return RF5StemmerIndex.get(term).size();
+			mergedSet.putAll(RF5StemmerIndex.get(term));
 		} else if (RF6StemmerIndex.containsKey(term)) {
-			return RF6StemmerIndex.get(term).size();
+			// return RF6StemmerIndex.get(term).size();
+			mergedSet.putAll(RF6StemmerIndex.get(term));
 		} else if (RF7StemmerIndex.containsKey(term)) {
-			return RF7StemmerIndex.get(term).size();
+			// return RF7StemmerIndex.get(term).size();
+			mergedSet.putAll(RF7StemmerIndex.get(term));
 		} else if (RF8StemmerIndex.containsKey(term)) {
-			return RF8StemmerIndex.get(term).size();
+			// return RF8StemmerIndex.get(term).size();
+			mergedSet.putAll(RF8StemmerIndex.get(term));
 		} else if (stemmerIndex.containsKey(term)) {
-			return stemmerIndex.get(term).size();
+			// return stemmerIndex.get(term).size();
+			mergedSet.putAll(stemmerIndex.get(term));
 		}
-		return 0;
+		return mergedSet.size();
 	}
 }
