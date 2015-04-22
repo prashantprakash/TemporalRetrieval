@@ -10,8 +10,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import javax.servlet.ServletConfig;
+
 public class DAO {
-	private final String indexFilesDir = "/WEB-INF/classes/";
 	/**
 	 * This map stores the tokens in the query and its occurrence.
 	 */
@@ -24,7 +25,7 @@ public class DAO {
 	private Map<Integer, Double> docRankingByW1;
 
 	public HashMap<String, Integer> documentNameIdMap;
-	
+
 	private static List<String> stopWords = new ArrayList<String>();
 
 	/**
@@ -39,13 +40,11 @@ public class DAO {
 	public List<String> getQueries() {
 		List<String> queries = new ArrayList<String>();
 		BufferedReader br = null;
-
 		try {
 
 			String sCurrentLine;
 
-			br = new BufferedReader(new FileReader("E:\\UTDHackethon\\UTD_Hack\\UTDHackWorkSpace\\ebola\\"
-					+ "corpus\\queries.txt"));
+			br = new BufferedReader(new FileReader(Location.location+"queries.txt"));
 
 			while ((sCurrentLine = br.readLine()) != null) {
 				// System.out.println(sCurrentLine);
@@ -76,7 +75,7 @@ public class DAO {
 		String[] tokens = query.replaceAll("[^a-zA-Z0-9'.]", " ").replaceAll("\\s+", " ").trim().split(" ");
 		ArrayList<String> listOfTokensInQuery = new ArrayList<String>();
 		for (String rawToken : tokens) {
-			if (rawToken.length() > 0 && ! stopWords.contains(rawToken))
+			if (rawToken.length() > 0 && !stopWords.contains(rawToken))
 				listOfTokensInQuery.add(rawToken.trim());
 		}
 		Map<String, Integer> tokenMap = new HashMap<String, Integer>();
@@ -102,17 +101,15 @@ public class DAO {
 	 * @param index
 	 */
 	public void generateRaking() {
-		FileUtils fileUtils = new FileUtils();
-		try {
-			FileUtils.readMaps();
-		} catch (Exception ex) {
-			System.err.println("error in reading map");
-		}
+		/*
+		 * try { FileUtils.readMaps(); } catch (Exception ex) {
+		 * System.err.println("error in reading map"); }
+		 */
 		for (Integer docid : FileUtils.documentIdMap.keySet()) {
-			calculateByW1(docid, fileUtils);
+			calculateByW1(docid);
 		}
 		this.docRankingByW1 = Util.sortByValue(docRankingByW1);
-		documentNameIdMap = fileUtils.documentNameIdMap;
+		documentNameIdMap = FileUtils.documentNameIdMap;
 
 	}
 
@@ -122,14 +119,14 @@ public class DAO {
 	 * @param docId
 	 * @param index
 	 */
-	private void calculateByW1(int docId, FileUtils fileUtils) {
+	private void calculateByW1(int docId) {
 		double w1 = 0.0d;
 
 		int maxF = FileUtils.documentIdMap.get(docId).maxtf;
-		int cs = fileUtils.getCollectionSize();
+		int cs = FileUtils.getCollectionSize();
 		for (String queryToken : this.queryIndex.keySet()) {
-			Tuple tuple = fileUtils.termFreqInDoc(queryToken, docId);
-			int df = fileUtils.getDocumentFrequency(queryToken);
+			Tuple tuple = FileUtils.termFreqInDoc(queryToken, docId);
+			int df = FileUtils.getDocumentFrequency(queryToken);
 			if (tuple != null) {
 				int tf = tuple.getTermFreq();
 				if (tuple.isRelevance()) {
@@ -160,7 +157,10 @@ public class DAO {
 		return this.documentNameIdMap;
 	}
 
-	
+	public Map<Integer, String> getUrlMap() {
+		return FileUtils.documentURLIdMap;
+	}
+
 	private void listStopWords() {
 		stopWords = Arrays.asList("a", "a's", "able", "about", "above", "according", "accordingly", "across",
 				"actually", "after", "afterwards", "again", "against", "ain't", "all", "allow", "allows", "almost",

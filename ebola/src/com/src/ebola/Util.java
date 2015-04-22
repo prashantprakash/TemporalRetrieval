@@ -136,7 +136,7 @@ public class Util {
 	 */
 	public static String getDocContent(String docName) {
 
-		String fileName = "E:\\IR\\indexer\\indexer\\corpus\\data\\";
+		String fileName = Location.location+"data//";
 		fileName += docName;
 		StringBuffer text = new StringBuffer();
 		try {

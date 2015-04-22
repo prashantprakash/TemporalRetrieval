@@ -6,9 +6,11 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.TreeMap;
@@ -17,6 +19,9 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 public class EbolaIndexerModify {
 	public static PorterStemmer stemmer = new PorterStemmer();
+
+	// Document Name to Id map for creating RF indexes
+	public static HashMap<Integer, String> documentURLIdMap = new HashMap<Integer, String>();
 
 	// Document Name to Id map for creating RF indexes
 	public static HashMap<String, Integer> documentNameIdMap = new HashMap<String, Integer>();
@@ -62,22 +67,50 @@ public class EbolaIndexerModify {
 	public static HashSet<String> stopWords = new HashSet<String>();
 
 	public static String docPrefix = "cranfield";
+	public static HashMap<String, String> URLCSV = new HashMap<String, String>();
 
 	public static void persistMaps() {
 		try {
-			FileUtils.writeMap("documentNameIdMap.ser", documentNameIdMap);
-			FileUtils.writeMap("docTokensMap.ser", docTokensMap);
-			FileUtils.writeMap("documentIdMap.ser", documentIdMap);
-			FileUtils.writeMap("stemmerIndex.ser", stemmerIndex);
-			FileUtils.writeMap("RF1StemmerIndex.ser", RF1StemmerIndex);
-			FileUtils.writeMap("RF2StemmerIndex.ser", RF2StemmerIndex);
-			FileUtils.writeMap("RF3StemmerIndex.ser", RF3StemmerIndex);
-			FileUtils.writeMap("RF4StemmerIndex.ser", RF4StemmerIndex);
-			FileUtils.writeMap("RF5StemmerIndex.ser", RF5StemmerIndex);
-			FileUtils.writeMap("RF6StemmerIndex.ser", RF6StemmerIndex);
-			FileUtils.writeMap("RF7StemmerIndex.ser", RF7StemmerIndex);
-			FileUtils.writeMap("RF8StemmerIndex.ser", RF8StemmerIndex);
-			FileUtils.writeMap("RfUtility.RFValueMap.ser", RfUtility.RFValueMap);
+
+			// FileUtils.writeMap("E:\\UTDHackethon\\UTD_Hack\\UTDHackWorkSpace\\ebola\\documentNameIdMap.ser",
+			// documentNameIdMap);
+			// FileUtils.writeMap("E:\\UTDHackethon\\UTD_Hack\\UTDHackWorkSpace\\ebola\\docTokensMap.ser",
+			// docTokensMap);
+			// FileUtils.writeMap("E:\\UTDHackethon\\UTD_Hack\\UTDHackWorkSpace\\ebola\\documentIdMap.ser",
+			// documentIdMap);
+			// FileUtils.writeMap("E:\\UTDHackethon\\UTD_Hack\\UTDHackWorkSpace\\ebola\\stemmerIndex.ser",
+			// stemmerIndex);
+			// FileUtils.writeMap("E:\\UTDHackethon\\UTD_Hack\\UTDHackWorkSpace\\ebola\\RF1StemmerIndex.ser",
+			// RF1StemmerIndex);
+			// FileUtils.writeMap("E:\\UTDHackethon\\UTD_Hack\\UTDHackWorkSpace\\ebola\\RF2StemmerIndex.ser",
+			// RF2StemmerIndex);
+			// FileUtils.writeMap("E:\\UTDHackethon\\UTD_Hack\\UTDHackWorkSpace\\ebola\\RF3StemmerIndex.ser",
+			// RF3StemmerIndex);
+			// FileUtils.writeMap("E:\\UTDHackethon\\UTD_Hack\\UTDHackWorkSpace\\ebola\\RF4StemmerIndex.ser",
+			// RF4StemmerIndex);
+			// FileUtils.writeMap("E:\\UTDHackethon\\UTD_Hack\\UTDHackWorkSpace\\ebola\\RF5StemmerIndex.ser",
+			// RF5StemmerIndex);
+			// FileUtils.writeMap("E:\\UTDHackethon\\UTD_Hack\\UTDHackWorkSpace\\ebola\\RF6StemmerIndex.ser",
+			// RF6StemmerIndex);
+			// FileUtils.writeMap("E:\\UTDHackethon\\UTD_Hack\\UTDHackWorkSpace\\ebola\\RF7StemmerIndex.ser",
+			// RF7StemmerIndex);
+			// FileUtils.writeMap("E:\\UTDHackethon\\UTD_Hack\\UTDHackWorkSpace\\ebola\\RF8StemmerIndex.ser",
+			// RF8StemmerIndex);
+			// FileUtils.writeMap("E:\\UTDHackethon\\UTD_Hack\\UTDHackWorkSpace\\ebola\\RfUtility.RFValueMap.ser",
+			// RfUtility.RFValueMap);
+			FileUtils.writeMap(Location.location + "documentNameIdMap.ser", documentNameIdMap);
+			FileUtils.writeMap(Location.location + "docTokensMap.ser", docTokensMap);
+			FileUtils.writeMap(Location.location + "documentIdMap.ser", documentIdMap);
+			FileUtils.writeMap(Location.location + "stemmerIndex.ser", stemmerIndex);
+			FileUtils.writeMap(Location.location + "RF1StemmerIndex.ser", RF1StemmerIndex);
+			FileUtils.writeMap(Location.location + "RF2StemmerIndex.ser", RF2StemmerIndex);
+			FileUtils.writeMap(Location.location + "RF3StemmerIndex.ser", RF3StemmerIndex);
+			FileUtils.writeMap(Location.location + "RF4StemmerIndex.ser", RF4StemmerIndex);
+			FileUtils.writeMap(Location.location + "RF5StemmerIndex.ser", RF5StemmerIndex);
+			FileUtils.writeMap(Location.location + "RF6StemmerIndex.ser", RF6StemmerIndex);
+			FileUtils.writeMap(Location.location + "RF7StemmerIndex.ser", RF7StemmerIndex);
+			FileUtils.writeMap(Location.location + "RF8StemmerIndex.ser", RF8StemmerIndex);
+			FileUtils.writeMap(Location.location + "RfUtility.RFValueMap.ser", RfUtility.RFValueMap);
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -85,14 +118,21 @@ public class EbolaIndexerModify {
 
 	}
 
-	public static void main(String[] args) {
+	public static void launch() {
 		long startIndexerTime = System.currentTimeMillis();
 
 		loadStopWords();
 		RfUtility.initialize();
-		File cranfieldFolder = new File("E:\\IR\\indexer\\indexer\\corpus\\data");
 
-		String annotationCSVPath = "E:\\IR\\indexer\\indexer\\corpus\\annotations.csv";
+		// File cranfieldFolder = new
+		// File("E:\\IR\\indexer\\indexer\\corpus\\data");
+		File cranfieldFolder = new File(Location.location + "data");
+
+		// String annotationCSVPath =
+		// "E:\\IR\\indexer\\indexer\\corpus\\annotations.csv";
+		String annotationCSVPath = Location.location + "annotations.csv";
+		// String urlsPath="E:\\IR\\indexer\\indexer\\corpus\\urls.csv";
+		String urlsPath = Location.location + "urls.csv";
 
 		System.out.println("Running Indexer ");
 		try {
@@ -108,10 +148,51 @@ public class EbolaIndexerModify {
 			System.out.println(RfUtility.RFValueMap);
 			persistMaps();
 			FileUtils.readMaps();
+			parseURLSCSV(urlsPath);
+			mapCSVIDToURL();
+			FileUtils.documentURLIdMap = documentURLIdMap;
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+
+	public static void parseURLSCSV(String path) throws IOException {
+		BufferedReader reader = new BufferedReader(new FileReader(path));
+		String line = "";
+		// load attributes
+		line = reader.readLine();
+
+		while ((line = reader.readLine()) != null) {
+
+			// use comma as separator
+			String[] row = line.split(splitter);
+
+			URLCSV.put(row[0], row[1]);
+
+		}
+		reader.close();
+
+	}
+
+	public static void mapCSVIDToURL() {
+		ArrayList<String> errorFields = new ArrayList<String>();
+		for (String docName : documentNameIdMap.keySet()) {
+
+			String[] array = docName.split("\\.");
+			String urlId = array[0];
+			String URL = URLCSV.get(urlId);
+			if (URL == null) {
+				errorFields.add(urlId);
+				continue;
+			}
+
+			documentURLIdMap.put(documentNameIdMap.get(docName), URL);
+
+		}
+
+		System.out.println(errorFields);
+		System.out.println(errorFields);
 	}
 
 	public static String splitter = ",";
@@ -279,18 +360,81 @@ public class EbolaIndexerModify {
 	}
 
 	public static void loadStopWords() {
-		String stopWordsText = "a,all,an,and,any,are,as,be,been,but,by,few,"
-				+ "for,have,he,her,here,him,his,how,i,in,is,it,its,many,me,my,"
-				+ "none,of,on,or,our,she,some,the,their,them,there,they,that,"
-				+ "this,us,was,what,when,where,which,who,why,will,with,you,you";
-		String stopWordsArray[] = stopWordsText.split(",");
-		for (int i = 0; i < stopWordsArray.length; i++) {
-			stopWords.add(stopWordsArray[i]);
+		/*
+		 * String stopWordsText = "a,all,an,and,any,are,as,be,been,but,by,few,"
+		 * + "for,have,he,her,here,him,his,how,i,in,is,it,its,many,me,my," +
+		 * "none,of,on,or,our,she,some,the,their,them,there,they,that," +
+		 * "this,us,was,what,when,where,which,who,why,will,with,you,you"; String
+		 * stopWordsArray[] = stopWordsText.split(","); for (int i = 0; i <
+		 * stopWordsArray.length; i++) { stopWords.add(stopWordsArray[i]);
+		 * 
+		 * }
+		 */
 
+		List<String> stopw = Arrays.asList("a", "a's", "able", "about", "above", "according", "accordingly", "across",
+				"actually", "after", "afterwards", "again", "against", "ain't", "all", "allow", "allows", "almost",
+				"alone", "along", "already", "also", "although", "always", "am", "among", "amongst", "an", "and",
+				"another", "any", "anybody", "anyhow", "anyone", "anything", "anyway", "anyways", "anywhere", "apart",
+				"appear", "appreciate", "appropriate", "are", "aren't", "around", "as", "aside", "ask", "asking",
+				"associated", "at", "available", "away", "awfully", "b", "be", "became", "because", "become",
+				"becomes", "becoming", "been", "before", "beforehand", "behind", "being", "believe", "below", "beside",
+				"besides", "best", "better", "between", "beyond", "both", "brief", "but", "by", "c", "c'mon", "c's",
+				"came", "can", "can't", "cannot", "cant", "cause", "causes", "certain", "certainly", "changes",
+				"clearly", "co", "com", "come", "comes", "concerning", "consequently", "consider", "considering",
+				"contain", "containing", "contains", "corresponding", "could", "couldn't", "course", "currently", "d",
+				"definitely", "described", "despite", "did", "didn't", "different", "do", "does", "doesn't", "doing",
+				"don't", "done", "down", "downwards", "during", "e", "each", "edu", "eg", "eight", "either", "else",
+				"elsewhere", "enough", "entirely", "especially", "et", "etc", "even", "ever", "every", "everybody",
+				"everyone", "everything", "everywhere", "ex", "exactly", "example", "except", "f", "far", "few",
+				"fifth", "first", "five", "followed", "following", "follows", "for", "former", "formerly", "forth",
+				"four", "from", "further", "furthermore", "g", "get", "gets", "getting", "given", "gives", "go",
+				"goes", "going", "gone", "got", "gotten", "greetings", "h", "had", "hadn't", "happens", "hardly",
+				"has", "hasn't", "have", "haven't", "having", "he", "he's", "hello", "help", "hence", "her", "here",
+				"here's", "hereafter", "hereby", "herein", "hereupon", "hers", "herself", "hi", "him", "himself",
+				"his", "hither", "hopefully", "how", "howbeit", "however", "i", "i'd", "i'll", "i'm", "i've", "ie",
+				"if", "ignored", "immediate", "in", "inasmuch", "inc", "inc.", "indeed", "indicate", "indicated",
+				"indicates", "inner", "insofar", "instead", "into", "inward", "is", "isn't", "it", "it'd", "it'll",
+				"it's", "its", "itself", "j", "just", "k", "keep", "keeps", "kept", "know", "knows", "known", "l",
+				"last", "lately", "later", "latter", "latterly", "least", "less", "lest", "let", "let's", "like",
+				"liked", "likely", "little", "look", "looking", "looks", "ltd", "m", "mainly", "many", "may", "maybe",
+				"me", "mean", "meanwhile", "merely", "might", "more", "moreover", "most", "mostly", "much", "must",
+				"my", "myself", "n", "name", "namely", "nd", "near", "nearly", "necessary", "need", "needs", "neither",
+				"never", "nevertheless", "new", "next", "nine", "no", "nobody", "non", "none", "noone", "nor",
+				"normally", "not", "nothing", "novel", "now", "nowhere", "o", "obviously", "of", "off", "often", "oh",
+				"ok", "okay", "old", "on", "once", "one", "ones", "only", "onto", "or", "other", "others", "otherwise",
+				"ought", "our", "ours", "ourselves", "out", "outside", "over", "overall", "own", "p", "particular",
+				"particularly", "per", "perhaps", "placed", "please", "plus", "possible", "presumably", "probably",
+				"provides", "q", "que", "quite", "qv", "r", "rather", "rd", "re", "really", "reasonably", "regarding",
+				"regardless", "regards", "relatively", "respectively", "right", "s", "said", "same", "saw", "say",
+				"saying", "says", "second", "secondly", "see", "seeing", "seem", "seemed", "seeming", "seems", "seen",
+				"self", "selves", "sensible", "sent", "serious", "seriously", "seven", "several", "shall", "she",
+				"should", "shouldn't", "since", "six", "so", "some", "somebody", "somehow", "someone", "something",
+				"sometime", "sometimes", "somewhat", "somewhere", "soon", "sorry", "specified", "specify",
+				"specifying", "still", "sub", "such", "sup", "sure", "t", "t's", "take", "taken", "tell", "tends",
+				"th", "than", "thank", "thanks", "thanx", "that", "that's", "thats", "the", "their", "theirs", "them",
+				"themselves", "then", "thence", "there", "there's", "thereafter", "thereby", "therefore", "therein",
+				"theres", "thereupon", "these", "they", "they'd", "they'll", "they're", "they've", "think", "third",
+				"this", "thorough", "thoroughly", "those", "though", "three", "through", "throughout", "thru", "thus",
+				"to", "together", "too", "took", "toward", "towards", "tried", "tries", "truly", "try", "trying",
+				"twice", "two", "u", "un", "under", "unfortunately", "unless", "unlikely", "until", "unto", "up",
+				"upon", "us", "use", "used", "useful", "uses", "using", "usually", "uucp", "v", "value", "various",
+				"very", "via", "viz", "vs", "w", "want", "wants", "was", "wasn't", "way", "we", "we'd", "we'll",
+				"we're", "we've", "welcome", "well", "went", "were", "weren't", "what", "what's", "whatever", "when",
+				"whence", "whenever", "where", "where's", "whereafter", "whereas", "whereby", "wherein", "whereupon",
+				"wherever", "whether", "which", "while", "whither", "who", "who's", "whoever", "whole", "whom",
+				"whose", "why", "will", "willing", "wish", "with", "within", "without", "won't", "wonder", "would",
+				"would", "wouldn't", "x", "y", "yes", "yet", "you", "you'd", "you'll", "you're", "you've", "your",
+				"yours", "yourself", "yourselves", "z", "zero");
+
+		for (String ar : stopw) {
+
+			stopWords.add(ar);
+			stopWordsStems.add(ar);
 		}
+
 	}
 
-	private static String getDocumentText(File newFile) throws IOException {
+	public static String getDocumentText(File newFile) throws IOException {
 		StringBuffer cranFieldText = new StringBuffer();
 		BufferedReader reader = new BufferedReader(new FileReader(newFile));
 		String line;

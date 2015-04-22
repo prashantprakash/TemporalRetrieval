@@ -50,11 +50,12 @@ public class Query extends HttpServlet {
 			dao.generateRaking();
 			Map<Integer, Double> ranking = dao.getRankingByW1();
 			Map<String, Integer> docNameMap = dao.getDocumentNameMap();
+			Map<Integer, String> urlMap = dao.getUrlMap();
 			ArrayList<Result> results = new ArrayList<Result>();
 			for (Entry<Integer, Double> entry : ranking.entrySet()) {
 				if (entry.getValue() > 0.0d) {
 					results.add(new Result(getName(entry.getKey(), docNameMap), Util.getDocContent(getName(
-							entry.getKey(), docNameMap)), entry.getValue()));
+							entry.getKey(), docNameMap)), entry.getValue(), urlMap.get(entry.getKey())));
 					System.out.println(entry.getKey());
 				}
 			}
@@ -68,6 +69,7 @@ public class Query extends HttpServlet {
 	private String getName(int id, Map<String, Integer> docNameMap) {
 		for (Map.Entry<String, Integer> entry : docNameMap.entrySet()) {
 			if (entry.getValue() == id) {
+				System.out.println(entry.getKey());
 				return entry.getKey();
 			}
 		}

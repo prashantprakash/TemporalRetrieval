@@ -6,10 +6,11 @@ public class Result {
 	private String url;
 	private double score;
 
-	public Result(String docId, String text, double score) {
+	public Result(String docId, String text, double score, String url) {
 		this.docId = docId;
 		this.text = text;
 		this.score = score;
+		this.url = url;
 	}
 
 	public String getDocId() {

@@ -112,21 +112,62 @@ body {
 									}
 								});
 
-						$("#searchsubmit").click(
+						$("#searchsubmit")
+						.click(
 								function() {
-									
+									var starttime =new Date();
+									console.log(starttime.getTime());
+									inputtextval = $("#inptext").val();
+									$("#searchresultdiv").show();
+									$('#searchdiv').hide();
+									$('#results').show();
+									$("#inptext1").val(inputtextval);
+									$("#inptext1").focus();
+									$('#results').empty();
+									console.log("search clicked");
 									var query = $("#inptext").val();
-									$.getJSON("query?choice=getresults&query="
-											+ query, function(data) {
-										console.log(data);
-									});
+									$
+											.getJSON(
+													"query?choice=getresults&query="
+															+ query,
+													function(data) {
+														console
+																.log(data);
+														var endtime =new Date();
+														console.log(endtime.getTime());
+														var time = (endtime.getTime() - starttime.getTime())/1000;
+														$('#results')
+																.append(
+																		'<div class=\"row\" style=\"height:25px;\">'
+																				+ '<div class=\"col-xs-2\"></div>'
+																				+ '<div class=\"col-xs-8\"><span>about ' + data.length+' results  ('+ time +' seconds) </span></div>');
+														for (i = 0; i < data.length; i++) {
+															$(
+																	'#results')
+																	.append(
+																			'<div class=\"row\"><div class=\"col-xs-2\"></div>'
+																					+ '<div class=\"col-xs-8\"><div style=\"width:100%;height:25px;\">'
+																					+ '<span style=\"float:left;\"> DocID:'
+																					+ data[i].docId
+																					+ '</span><span style=\"float:right;\"> Score:'
+																					+ data[i].score
+																					+ '</span></div><div style=\"width:100%;height:20px;\"> Url: <a href=\"'+ data[i].url+'\" target=\"_blank\">'+data[i].url+'</a></div><div><p>'
+																	
+											
+																					+ data[i].text
+																					+ '</p></div></div></div>');
+														}
+													});
 								});
+
 
 						$("#searchsubmit1")
 								.click(
 										function() {
 											$('#results').empty();
 											console.log("search1 clicked");
+											var starttime =new Date();
+											console.log(starttime.getTime());
 											var query = $("#inptext1").val();
 											$
 													.getJSON(
@@ -135,25 +176,30 @@ body {
 															function(data) {
 																console
 																		.log(data);
+																var endtime =new Date();
+																console.log(endtime.getTime());
+																var time = (endtime.getTime() - starttime.getTime())/1000;
 																$('#results')
-																		.append(
-																				'<div class=\"row\">'
-																						+ '<div class=\"col-xs-2\"></div>'
-																						+ '<div class=\"col-xs-8\"><span>about x in y </span></div>');
-																for (i = 0; i < data.length; i++) {
-																	$(
-																			'#results')
-																			.append(
-																					'<div class=\"row\"><div class=\"col-xs-2\"></div>'
-																							+ '<div class=\"col-xs-8\"><div style=\"width:100%;height:25px;\">'
-																							+ '<span style=\"float:left;\"> DocID:'
-																							+ data[i].docId
-																							+ '</span><span style=\"float:right;\"> Score:'
-																							+ data[i].score
-																							+ '</span></div><div><p>'
-																							+ data[i].text
-																							+ '</p></div></div></div>');
-																}
+																.append(
+																		'<div class=\"row\" style=\"height:25px;\">'
+																				+ '<div class=\"col-xs-2\"></div>'
+																				+ '<div class=\"col-xs-8\"><span>about ' + data.length+' results ('+ time+' seconds) </span></div>');
+														for (i = 0; i < data.length; i++) {
+															$(
+																	'#results')
+																	.append(
+																			'<div class=\"row\"><div class=\"col-xs-2\"></div>'
+																					+ '<div class=\"col-xs-8\"><div style=\"width:100%;height:25px;\">'
+																					+ '<span style=\"float:left;\"> DocID:'
+																					+ data[i].docId
+																					+ '</span><span style=\"float:right;\"> Score:'
+																					+ data[i].score
+																					+ '</span></div><div style=\"width:100%;height:20px;\"> Url: <a href=\"'+ data[i].url+'\" target=\"_blank\">'+data[i].url+'</a></div><div><p>'
+																	
+											
+																					+ data[i].text
+																					+ '</p></div></div></div>');
+														}
 															});
 										});
 
